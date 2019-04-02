@@ -1,0 +1,233 @@
+/*
+ * 头部入口模块
+ * 2015-06-27 14:00
+ * */
+define(function(require,exports,module){
+	/*通过 require 引入依赖*/
+	require('jquery');	
+	var drToggle = require('js/modules/drtoggle.js');
+	var Tabs = require('js/modules/tabs.js');
+	var Banner_nav = require('js/modules/banner.js');
+	var twoTabs = require('js/modules/twoTabs.js');
+	var Popping = require('js/modules/popping.js');
+	$(function(){
+		//语言切换显示隐藏
+		var drlangues = new drToggle().init({
+			id:'#dr-country',
+			action:'#dr-english'
+		});	
+		//首页子菜单显示隐藏
+		var drindex = new drToggle().init({
+			id:'#DrNav',
+			action:'#DRsubNav'
+		});
+		//求婚钻戒子菜单显示隐藏
+		var drqhzj = new drToggle().init({
+			id:'#qhzjNav',
+			action:'#qhzjsubNav'
+		});	
+		//真爱时刻子菜单显示隐藏
+		var drzasks = new drToggle().init({
+			id:'#zaskNav',
+			action:'#zasksubNav'
+		});	
+		//实体店子菜单显示隐藏
+		var drstd = new drToggle().init({
+			id:'#shopNav',
+			action:'#ShopsubNav'
+		});	
+		//品牌文化子菜单显示隐藏
+		var drppwh = new drToggle().init({
+			id:'#ppwhNav',
+			action:'#ppwhsubNav'
+		});	
+		//DR社区子菜单显示隐藏
+		var drsq = new drToggle().init({
+			id:'#DRsqNav',
+			action:'#DRsqsubNav'
+		});
+        //纪念日礼物
+		var jnrlw = new drToggle().init({
+			id:'#jnrlwNav',
+			action:'#jnrlwsubNav'
+		});
+		//登陆之后操作项显示隐藏
+		var drlogin = new drToggle().init({
+			id:'#loginInInfo',
+			action:'#loginInaAtion'
+		});	
+		//导航栏实体店轮播
+		var nav_slider = new Banner_nav().init({
+		 	id:'#drnav_slider',
+		 	time: 2500
+		});	 
+		//头部菜单店铺切换效果
+		var shopTabsNav = new twoTabs().init({
+			id:'#drstore-tab-nav',
+			firstWidth:26,
+			otherWidth:58,
+			timer: 300
+		});
+		
+
+		//验证为空时
+		if($('.txtIDCardw').val() == ''){
+			$('.drmember_yz-word').removeClass('drmember_yz-wrong');
+		}
+		//导航产品图片轮换
+		$('.dr_navTabs').each(function(){
+			new Tabs().init({
+				tabsTops: $(this).find('.dr_navsuvleft-same a'),
+				tabsMains: $(this).find('.dr_navsuvleft-ring a'),
+				event: 'mouseenter'
+			});
+			new Tabs().init({
+				tabsTops: $(this).find('.dr_navsuvright-same a'),
+				tabsMains: $(this).find('.dr_navsuvright-ring a'),
+				event: 'mouseenter'
+			});
+		});
+		//时间变量
+        var TheTime1;
+		//点击去掉文字输入提示
+        $('.txtIDCardw').focus(function () {
+            $(this).attr('placeholder', '');
+            $(this).parents('.aspnetForm').find('.drmember_yz-word').hide();
+            clearInterval(TheTime1);
+        }).blur(function () {         
+            $(this).attr('placeholder', '请输入身份证号验证真爱承诺');
+        });
+		
+		$('.drmember_yz').hover(function(){
+			$(this).find('.drmember_yz-word').show().removeClass('drmember_yz-wrong').html('<p>'+'Darry Ring严格规定男士凭身份证一生仅能定制一枚，象征男人一生真爱的浪漫承诺。输入身份证号码即可查询购买记录。'+'</p>');
+			TheTime1 = setTimeout(Tsnews,5000);
+			$('.drmember_yz-wrong').hide();
+		},function(){
+			$(this).find('.drmember_yz-word').hide()
+        	clearInterval(TheTime1);
+        });
+
+        //输入框真爱查询()
+        $(".trueLoveSeach").click(function(){ 
+            var txt =$(this).parents('.aspnetForm');
+           	if(txt.find('.txtIDCardw').val()==''){
+           		txt.find('.drmember_yz-word').addClass('drmember_yz-wrong').html('请输入证件号').show();
+           	}else{
+           		$(this).parents(".aspnetForm").submit(); 
+           	}
+                                  
+        });
+
+        //验证事件(无用)
+        function Toyz(){
+        	var identity = $('#card').val();
+			var type = $('.xz').attr('data-type');
+			if(typeof(type) === 'undefined') {
+				var type = 1;
+			}
+            
+			if (type == 3) {
+				 _identity = identity;
+				 identity = identity.replace('(', '').replace(')', '');
+				 console.log(HKIdValid(identity));
+			
+				if (identity.length == 8) {
+					flag = HKIdValid(identity);
+					if (flag == false) {
+						flag = MCIdValid(identity);
+					}
+				} else {
+					flag = TWIdValid(identity);
+				}
+
+				if (flag == false && _identity.length == 10 ) {
+                    flag = true;
+				}
+
+				if (flag == false) {
+					$("#dr_sfwrong").removeClass("index_yz-word").addClass("drmember_yz-wrong").show().html("<p>護照編號輸入有誤，請重新輸入。</p>");
+					return false;
+				}
+			} else if(true != IdentityValid(identity) && type == 1) {
+            	$("#dr_sfwrong").removeClass("index_yz-word").addClass("drmember_yz-wrong").show().html("<p>身份证有误，请重新输入。</p>");
+            	return false;
+            } else if (type == 2 && true != PPIdValid(identity)) {
+				$("#dr_sfwrong").removeClass("index_yz-word").addClass("drmember_yz-wrong").show().html("<p>您的身份證號碼輸入有誤，請重新輸入。</p>");
+				return false;
+			} 
+			
+            $("#aspnetForm").submit();
+        }
+
+
+		//点击关闭弹窗
+		$('.Popup_close,.goto_shop').off('click').on('click',function(){
+			$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+			clearInterval(window.loginInterval);
+			window.clearInterval(window.toUrl);
+		});
+
+        //头部新增天猫入口
+        $('.drtmall').hover(function(){
+        	$('.drTmallLink').show();
+        },function(){
+        	$('.drTmallLink').hide();
+        });
+
+		
+		
+		$(window).off('srcoll').on('scroll',function(){
+			setNav();
+		});
+		setNav();
+		//搜索点击
+		$('.searchRing').hover(function(){
+			$(this).addClass('active');
+			$(this).find('input').focus();
+		},function(){
+			$(this).removeClass('active');
+			$(this).find('input').blur();
+		});
+     	//点击登录或者注册出现弹窗
+     	$('.themeber.btn').click(function(){
+     		$('.dr_Registsign,.dr_blackwall').show();
+     		$('#papLogin').attr('src','https://passport.darryring.com/other');
+     		window.loginInterval = setInterval(function() {
+                $.get('/ajax/login', function(res) {
+                    if (res.result >= 0) {
+                        clearInterval(window.loginInterval);
+                        location.reload();
+                    }
+                });
+            },2000);
+     	});
+     	//点击关闭弹窗
+		$('.Popup_close').off('click').on('click',function(){
+			$('.dr_Registsign,.dr_blackwall').hide();
+		});
+		//选择网站语言
+		$('.dr_langueBtn').off('click').on('click',function(){
+			$('#langueList').show();
+		});
+		$('#langueList p').off('click').on('click',function(){
+			$('#langueList').hide();
+		});
+		$('#langueList').off('mouseleave').on('mouseleave',function(){
+			$(this).hide();
+		});
+	});
+});
+//提示消失
+function Tsnews(){
+	$('.drmember_yz-word').hide();
+}
+//设置锚点导航
+function setNav(){
+	var theTop=$(".dr_header").height()+50;
+	var winTop=$(window).scrollTop();
+	if(winTop > theTop){
+		$('.headerAll').addClass('toacitve');
+	}else{
+		$('.headerAll').removeClass('toacitve');
+	}
+}

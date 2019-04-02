@@ -1,0 +1,123 @@
+body {
+    background-color: rgb(255, 255, 255) !important;
+}
+a, b, body, dd, del, div, dl, dt, em, form, h1, h2, h3, h4, h5, h6, html, i, iframe, img, ins, label, legend, li, ol, p, pre, small, span, strong, u, ul, var, input {
+    margin: 0;
+    padding: 0;
+}
+article, aside, footer, header, nav, section {
+    display: block;
+}
+ol, ul {
+    list-style: none;
+}
+img,button ,input,  {
+    border: none;
+    outline: none;
+}
+img {
+	vertical-align: top;
+}
+em, i, u {
+    font-style: normal;
+}
+s {
+    text-decoration: none;
+}
+.fl {
+    float: left;
+}
+.fr {
+    float: right;
+}
+/* 清除浮动公共类 */
+.clearfix:after,
+.clearfix:before {
+    content: "";
+    display: table;
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}
+body {
+    font: 12px/1.5 'microsoft yahei',Arial, Verdana, "\5b8b\4f53";
+    /* color: rgb(250, 225, 225); */
+    background: #d9dadc;
+}
+a {
+    color: #666;
+    text-decoration: none;
+}
+a:hover {
+    color: #c81623;
+}
+.w1200 {
+    width: 1200px;
+    margin: 0 auto;
+}
+.w1360 {
+    width: 1360px;
+    margin: 0 auto;
+}
+/* 单行文本超出省略号显示 */
+.txt-cut {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.m-color {
+    color: #c81623;
+}
+.td-t {
+    text-decoration: line-through;
+}
+.ml-5 {
+    margin-left: 5px;
+}
+.mr-5 {
+    margin-right: 5px;
+}
+.mt-5 {
+    margin-top: 5px;
+}
+.pa {
+    position: absolute;
+}
+.mt-20 {
+    margin-top: 20px;
+}
+.fz-22 {
+    font-size: 22px;
+}
+.pm-8 {
+    padding-bottom: 8px;
+}
+/* .r-pr .pr-sell li:nth-child */
+.iconfont {
+    /* 可以解决字体图标对文字的干扰 */
+    vertical-align: middle;
+}
+.txc {
+    text-align: center;
+}
+.fz-18 {
+    font-size: 18px;
+}
+@font-face {
+    font-family: 'iconfont';  /* project id 891976 */
+    src: url('http://at.alicdn.com/t/font_891976_kzoufg3f67f.eot');
+    src: url('http://at.alicdn.com/t/font_891976_kzoufg3f67f.eot?#iefix') format('embedded-opentype'),
+    url('http://at.alicdn.com/t/font_891976_kzoufg3f67f.woff') format('woff'),
+    url('http://at.alicdn.com/t/font_891976_kzoufg3f67f.ttf') format('truetype'),
+    url('http://at.alicdn.com/t/font_891976_kzoufg3f67f.svg#iconfont') format('svg');
+  }
+  .iconfont{
+    font-family:"iconfont" !important;
+    font-size:16px;font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+  }

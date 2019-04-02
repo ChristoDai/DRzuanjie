@@ -1,0 +1,99 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+ul,
+ol {
+	list-style: none;
+}
+/* a的简写方式 */
+a {
+	color: #333;
+	text-decoration: none;
+
+}
+/*a:hover {
+	color: #f40;
+}*/
+/* 因为input默认的边框是2像素 所以将它换成1像素 */
+input {
+	border: 1px solid #ccc;
+}
+
+body {
+	font: 14px/1.5 'microsoft yahei';
+	color: #333;
+	background-color: #f1f1f1;
+}
+
+/*
+	版心公共类
+*/
+.w1200 {
+	width: 1200px;
+	margin: 0 auto;
+}
+
+
+/*清除浮动*/
+.clearfix:before,
+.clearfix:after {
+	content: '';
+	display: table;
+}
+.clearfix:after {
+	clear: both;
+}
+/*  */
+
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+
+/* 文字溢出隐藏 */
+.text-cut {
+    overflow: hidden;         
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/*  */
+
+/*3.请写出解决外边距合并导致父盒子“塌陷”的几种解决方式*/
+/*可以给盒子加一个边框*/
+/*可以给父元素加一个overflow:hidden*/
+/*可以给父元素强制加一个高*/
+/*可以给父元素加上内容*/
+
+/**4.请写出清除浮动的几种方式 */
+/*给父元素加高*/
+/*给父元素加overflow: hidden;*/
+/*用额外标签法 创建一个新的盒子放在浮动元素的最后面，给这个盒子添加一个css属性：clear:both;*/
+/*用伪元素创建公共类清除浮动.clearfix::after {
+    content:'';
+    display:block;
+    clear:both;
+    height:0;
+    visibility:hidden;
+}
+.clearfix {
+    *zoom:1;
+}*/
+
+/*5.position的值有哪些？ relative和absolute定位原点是？*/
+/*Position:static;
+Position:relative;
+Position:absolute;
+Position:fixed;*/
+/*relative是相对于自己进行定位
+absolute是相对于父元素进行定位*/
+/*6.请写出定位的几种方式，并总结其各自特点 */
+/*静态定位：相当于标准流 ;固定定位：完全脱标，不随浏览器滚动而变化;相对定位：不脱离标准流，相对于自身原来的位置进行定位;绝对定位:脱离标准流,相对于父元素进行定位;*/
+/*7.CSS三种样式分别是什么？*/
+/*内嵌样式、外联样式、行内样式*/
+/*8.请写出写出overflow:hidden、display:none、visibility:hidden之间的区别*/
+/*overflow:hidden隐藏多出盒子的元素，清除超出盒子的部分元素、触发fbc,防止塌陷*/
+/*display:none隐藏元素，并且隐藏的部分不占位置*/
+/*visibility:hidden 隐藏元素，但是隐藏的部分依然占据位置*/

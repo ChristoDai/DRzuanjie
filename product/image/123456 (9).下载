@@ -1,0 +1,1820 @@
+/*
+ * 购买详情入口模块
+ * 2015-10-15 09:00
+ * */
+define(function(require, exports, module) {
+	/*通过 require 引入依赖*/
+	require('jquery');
+	var Magnifier = require('js/modules/Magnifier.js');
+	var Imgscroll = require('js/modules/scrolling.js');
+	var popupBox = require('js/modules/popupBox.js');
+	var countTimeFun= require('js/modules/countTime.js');
+	//人气组合立即购买标识
+	var zh_isclick = false;
+	$(function() {
+		$('.ringbuy_BigRing li').each(function(index){
+			//放大镜
+			new Magnifier($(this).attr('id'), {
+				pPath: '',
+				sWidth: 150, //小框宽度
+				sHeight: 150, //小框高度
+				sOpacity: 0.4, //小框透明度
+				pWidth: 300, //大图宽
+				pHeight: 300, //大图高
+				mLeft: 85, //大图距离小图左边的距离
+				mTop: 0 //大图距离小图上边的距离		
+			});
+		});
+		//淡入淡出
+		var i = 0;
+		var els = $(".ringbuy_BigRing li");
+		var maxIndex = els.length;
+		//淡入淡出动画
+		function Tshow1() {
+			els.eq(i).stop(true, true).show().siblings().hide();
+			$('.ringbuy_SmallRing li').eq(i).addClass("SmallRing_check").siblings().removeClass("SmallRing_check");
+			AllaskRight();
+		};
+		//缩略图
+		$('.ringbuy_SmallRing li').each(function(index) {
+			$(this).hover(function() {
+				i = index;
+				Tshow1(500);
+			});
+		});
+		//调用图片滚动组件(产品缩略图)
+		var Imgscrol = new Imgscroll().init({
+			id: '#SmallRing-photo',
+			prev: '#SmallRing-photo .SmallRing-pre,#SmallRing-photo .SmallRing-preend',
+			next: '#SmallRing-photo .SmallRing-next,#SmallRing-photo .SmallRing-nextend',
+			scrollNum: 1,
+			theMag: 20,
+			Alllist:4,
+			theway:false,
+			ntendClass:'SmallRing-nextend',
+			ntClass:'SmallRing-next',
+			pendClass:'SmallRing-preend',
+			peClass:'SmallRing-pre'
+		});
+		//点击搭配主钻
+		$('.ringbuy_Choose-secright a').off('click').on('click',function(){
+			$(this).addClass("chooseit").siblings().removeClass("chooseit");
+		});
+
+
+
+		//点击材质加样式
+		$("#MetalMaterials i").click(function(){
+			$(this).addClass('chooseit').siblings().removeClass('chooseit');
+			/*$('.ringbuy_pirce span').html('&yen;'+$(this).find('.chooseit').attr('value'));*/
+            var ringMaterial = $('.ringbuy_Choose-first i.chooseit').text();
+			$('.ringMaterial').html(ringMaterial);
+			var MetalMaterials = $(this).data('info');
+			var HandSizes = MetalMaterials.HandSizes;
+			if (HandSizes.length > 0) {
+				var _options = '<option>选择手寸</option>';
+				var handsizelen = HandSizes.length;
+				for (var i = 0; i < handsizelen; i++) {
+					var data = HandSizes[i];
+					// var data_info = '{\"MaterialID\":\"{0}\",\"AddPrice\":{1},\"Size\":{2}}'.StringFormat(data.MaterialID, data.AddPrice, data.Size);
+					_options += '<option value="' + data.Size + '" data-info="{&quot;MaterialID&quot;:&quot;' + data.MaterialID + '&quot;,&quot;AddPrice&quot;: ' + data.AddPrice + ',&quot;Size&quot;:' + data.Size + '}">' + data.Size + '</option>';
+				}
+
+				$('#HandSizes').html(_options);
+			} else {
+				$('#HandSizes').html('<option>选择手寸</option>');
+			}
+
+			var matelMaterials = $('#MetalMaterials i.chooseit').text();
+			$('.ring_material').html(matelMaterials);
+
+			loadGoods();
+
+
+		});
+
+		// 尺寸选择
+		$('#HandSizes').change(function(){
+			loadGoods();
+		});
+
+		// 钻石选择
+		$('.ringbuy_Choose-sec').off('click').on('click','#main-stones a',function(){
+			
+			$(this).addClass('chooseit').siblings().removeClass('chooseit');
+			var MainStoneRanges = $(this).data('info');
+
+			if(soul != ''){
+				var copyU = window.location.origin+ window.location.pathname +'?soul='+soul+'&sku='+MainStoneRanges.StoneSku;
+			} else {
+				var copyU = window.location.origin+ window.location.pathname +'?sku='+MainStoneRanges.StoneSku;
+			}
+			
+			$('#copyTxt').val(copyU);
+			$('#drCopyTips').html(copyU);
+			
+			var name = SeriesName+' '+StyleName+' '+MainStoneRanges.Carat+'分 '+MainStoneRanges.Color+'色';
+			$('.back_CName').html(name);
+			$('.ring_CName').html(name);
+			$('.hot_CName').html(name);
+
+			var param = '<li><span>主钻重量: </span>'+MainStoneRanges.Carat+'分</li><li><span>钻石颜色: </span>'+MainStoneRanges.Color+'色</li><li><span>钻石净度: </span>'+MainStoneRanges.Clarity+'</li><li><span>钻石切工: </span>'+MainStoneRanges.Cut+'</li>';
+			$('.ringbuy_Parameter li').remove();
+			$('.ringbuy_Parameter').prepend(param);
+			
+			if(MainStoneRanges.Clarity != null){
+				if($('.Details_Parameter li').hasClass('p_clarity')){
+					$('.p_clarity span').html(MainStoneRanges.Clarity);
+				} else {
+					var str = '<li class="p_clarity">净度：<span>'+MainStoneRanges.Clarity+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_clarity').remove();
+			}
+			if(MainStoneRanges.Color != null){
+				if($('.Details_Parameter li').hasClass('p_color')){
+					$('.p_color span').html(MainStoneRanges.Color);
+				} else {
+					var str = '<li class="p_color">颜色：<span>'+MainStoneRanges.Color+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_color').remove();
+			}
+			if(MainStoneRanges.Carat != null){
+				if($('.Details_Parameter li').hasClass('p_weight')){
+					$('.p_weight span').html(MainStoneRanges.Carat);
+				} else {
+					var str = '<li class="p_weight">主石大小：<span>'+MainStoneRanges.Carat+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_weight').remove();
+			}
+
+			if(MainStoneRanges.Cut != null){
+				if($('.Details_Parameter li').hasClass('p_cut')){
+					$('.p_cut span').html(MainStoneRanges.Cut);
+				} else {
+					var str = '<li class="p_cut">切工：<span>'+MainStoneRanges.Cut+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_cut').remove();
+			}
+
+			if(MainStoneRanges.Carat != null){
+				if($('.Details_Parameter li').hasClass('p_tweight')){
+					$('.p_tweight span').html(MainStoneRanges.Carat);
+				} else {
+					var str = '<li class="p_tweight">主石总重：<span>'+MainStoneRanges.Carat+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_tweight').remove();
+			}
+
+			if(MainStoneRanges.Polish != null){
+				if($('.Details_Parameter li').hasClass('p_polish')){
+					$('.p_polish span').html(MainStoneRanges.Polish);
+				} else {
+					var str = '<li class="p_polish">抛光：<span>'+MainStoneRanges.Polish+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_polish').remove();
+			}
+
+			if(MainStoneRanges.Symmetry != null){
+				if($('.Details_Parameter li').hasClass('p_symm')){
+					$('.p_symm span').html(MainStoneRanges.Symmetry);
+				} else {
+					var str = '<li class="p_symm">对称：<span>'+MainStoneRanges.Symmetry+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_symm').remove();
+			}
+
+			if(MainStoneRanges.Fluorescence != null){
+				if($('.Details_Parameter li').hasClass('p_fluo')){
+					$('.p_fluo span').html(MainStoneRanges.Fluorescence);
+				} else {
+					var str = '<li class="p_fluo">荧光：<span>'+MainStoneRanges.Fluorescence+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.p_fluo').remove();
+			}
+
+			if(MainStoneRanges.MainStoneRanges[0].FuStoneCount > 0){
+				var detail = MainStoneRanges.MainStoneRanges[0].FuStoneCount;
+				if(MainStoneRanges.MainStoneRanges[0].FuStoneCountMax > 0){
+					detail = detail + '-'+MainStoneRanges.MainStoneRanges[0].FuStoneCountMax;
+				}
+				if($('.Details_Parameter li').hasClass('fu_num')){
+					$('.fu_num span').html(detail);
+				} else {
+					var str = '<li class="fu_num">副石数量：<span>'+detail+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.fu_num').remove();
+			}
+
+			if(MainStoneRanges.MainStoneRanges[0].FuStoneWeight > 0){
+				var detail = MainStoneRanges.MainStoneRanges[0].FuStoneWeight;
+				if(MainStoneRanges.MainStoneRanges[0].FuStoneWeightMax > 0){
+					detail = detail + '-'+MainStoneRanges.MainStoneRanges[0].FuStoneWeightMax;
+				}
+				if($('.Details_Parameter li').hasClass('fu_tweight')){
+					$('.fu_tweight span').html(detail);
+				} else {
+					var str = '<li class="fu_tweight">副石总重：<span>'+detail+'</span></li>'
+					$('.Details_Parameter').append(str);
+				}
+			} else {
+				$('.fu_num').remove();
+			}
+
+
+			/*$('.p_clarity span').html(MainStoneRanges.Clarity);
+			$('.p_color span').html(MainStoneRanges.Color);
+			$('.p_weight span').html(MainStoneRanges.Carat);
+			$('.p_cut span').html(MainStoneRanges.Cut);
+			$('.p_tweight span').html(MainStoneRanges.Carat);
+			$('.p_polish span').html(MainStoneRanges.Polish);
+			$('.p_symm span').html(MainStoneRanges.Symmetry);
+			$('.p_fluo span').html(MainStoneRanges.Fluorescence);*/
+			
+			loadGoods();
+		});
+
+		//刻字
+		$(".ringbuy_Choose-third i").off('click').on('click',function(){
+		    $(this).parent().find('input').val($(this).parent().find('input').val() + ($(this).text()).charAt());
+			//html改成text也可以执行
+		});
+		//预览效果点击显示
+		$(".ringbuy_Choose-third em").off('click').on('click',function(){
+			$('.kzyl').show();
+			$('.kzyl').html($(this).parent().find('input').val());
+		});
+
+		//收藏，取消收藏
+		if(status == 0) {
+			$(".ringbuy_Button i.to_nosc").show();
+			$(".ringbuy_Button i.to_ysc").hide();
+		} else {
+			$(".ringbuy_Button i.to_ysc").show();
+			$(".ringbuy_Button i.to_nosc").hide();
+		}
+
+		//点击出现收藏夹以及改变收藏样式
+		$(".ringbuy_Button i.to_nosc").off('click').on('click',function(){
+
+			var _this = $(this);
+			var mainStones = $('#main-stones a.chooseit').data('info');
+			var handSize = $('#HandSizes option:selected').data('info');
+			var matelMaterials = $('#MetalMaterials i.chooseit').data('info');
+			var carved = $('#carved').val();
+			var style = $('#MetalMaterials i.chooseit').data('id');
+
+			
+			var mainStones_Price = 0;
+			if (typeof(mainStones) != "undefined") {
+				mainStones_Price = mainStones.Price;
+				var StoneSku = mainStones.StoneSku;
+			} else {
+				var StoneSku = 0;
+			}
+
+			var MRMPice = 0;
+			if (mainStones && mainStones.MainStoneRanges != null && mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices) {
+				var MRMP = mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices;
+
+				for (var i = 0; i < MRMP.length; i++) {
+					if (matelMaterials.MaterialID == MRMP[i].MaterialID) {
+						MRMPice = MRMP[i].AddPrice;
+					}
+				}
+			} else {
+				mainStones = {Price: 0};
+			}
+
+			var totalPrice = matelMaterials.Price + mainStones.Price * MainStoneCount  + MRMPice;
+
+			var GoodsParams = {
+				id: id,
+				MainStones: mainStones,
+				HandSizes: '',
+				MetalMaterials: matelMaterials,
+				carved: '',
+				price: totalPrice,
+				sku : StoneSku
+			};
+			
+			$.post(collectionUrl, {data: GoodsParams}, function(res) {
+				switch (res.result) {
+					case -2:
+						$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+							$('.dr_Registsign,.dr_blackwall').show();
+							$('#papLogin').attr('src','https://passport.darryring.com/other');
+							window.loginInterval = setInterval(function() {
+								$.get('/ajax/login', function(res) {
+									if (res.result >= 0) {
+										clearInterval(window.loginInterval);
+										$('.dr_Registsign,.dr_blackwall').hide();
+                            			islogin = 1;
+										//location.reload();
+									}
+								});
+							},1000);
+						break;
+					case 0:
+						$('.dr_shopPopup,.dr_blackwall').show();
+						$(".ringbuy_Button i.to_ysc").show();
+						_this.hide();
+						if (typeof(_dr) != 'undefined') {
+							_dr.init({'account': 'DarryRing-PC', 'event': 'goodscollect'});
+						}
+						break;
+					case -8:
+						alert(res.message);
+						break;
+					default:
+				}
+			});
+
+
+
+			
+		});
+		//点击取消收藏
+		$(".ringbuy_Button i.to_ysc").off('click').on('click',function(){
+			var _this = $(this);
+			//搭配主钻
+			var mainStones = $('#main-stones a.chooseit').data('info');//钻石价格
+
+			if (typeof(mainStones) != "undefined") {
+				var StoneSku = mainStones.StoneSku;
+			} else {
+				var StoneSku = 0;
+			}
+
+			var GoodsParams = {
+				id: id,
+				sku: StoneSku
+			};
+			$.post(cannelcollectUrl, {data: GoodsParams}, function(res) {
+				switch (res.result) {
+					case -2:
+						$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+							$('.dr_Registsign,.dr_blackwall').show();
+							$('#papLogin').attr('src','https://passport.darryring.com/other');
+							window.loginInterval = setInterval(function() {
+								$.get('/ajax/login', function(res) {
+									if (res.result >= 0) {
+										clearInterval(window.loginInterval);
+										$('.dr_Registsign,.dr_blackwall').hide();
+                            			islogin = 1;
+										//location.reload();
+									}
+								});
+							},1000);
+						break;
+					case 0:
+						$(".ringbuy_Button i.to_nosc").show().html('已取消收藏');
+						_this.hide();
+						break;
+					case -1:
+						alert(res.message);
+						break;
+					default:
+				}
+			});
+
+
+			
+		});
+		//点击选中（热门搭配）
+		$('.ringbuy_hotdp-cp i').off('click').on('click',function(){
+			$(this).toggleClass("hotdp-cpcheck");
+			if($(this).hasClass('hotdp-cpcheck')){
+				$(this).parent().find('strong').html();
+			}
+		});
+
+		//评论异步请求分页
+		$('.comments').off('click').on('click', function(){
+			alert($(this).data('page'));
+		});
+		//点击消失大图
+		$('.haveimg_bigimg-cort img').off('click').on('click',function(){
+			$(this).parents('.haveimg_theimg').hide();
+			$(this).parents('.Details_allask-haveimg').find('.haveimg_sltall li').removeClass("haveimg_sltall-click");
+			//$('.Details_allask-xq,.Details_allask-person').css('marginTop',0);
+			llaskRight();
+		});
+		//调用图片滚动组件(评论缩略图)
+		var Thescrol = new Imgscroll().init({
+			id: '#haveimg_slt',
+			prev: '.haveimg_preend,.haveimg_pre',
+			next: '.haveimg_next,.haveimg_nextend',
+			scrollNum: 1,
+			theMag: 14,
+			theway:false,
+			Alllist:4,
+			thebutton:true,
+			ntendClass:'haveimg_nextend',
+			ntClass:'haveimg_next',
+			pendClass:'haveimg_preend',
+			peClass:'haveimg_pre'
+		});
+		//淡入淡出
+		var b = 0;
+		var bls = $(".haveimg_bigimg li");
+		var maxIndex = bls.length;
+		//淡入淡出动画
+		function Tshow() {
+			bls.eq(b).stop(true, true).show().siblings().hide();
+			$('.haveimg_sltall li').eq(b).addClass("haveimg_sltall-click").siblings().removeClass("haveimg_sltall-click");
+			AllaskRight();
+		};
+		//缩略图
+		$('.haveimg_sltall li').each(function(index) {
+			$(this).live('click',function(){
+				$('.haveimg_theimg').show();
+				b = index;
+				Tshow(500);
+			});
+		});
+		//左右按钮切换
+		$(".Bigimg_next").live('click',function(){
+			b = b + 1 >= maxIndex ? 0 : b + 1;
+			Tshow();
+		});
+		$(".Bigimg_pre").live('click',function(){
+			b = b - 1;
+			Tshow();
+		});
+		//设置图片适应
+		control_album(); 
+
+		//点击关闭弹窗
+		$('.Popup_close,.goto_shop').off('click').on('click',function(){
+			$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+			clearInterval(window.loginInterval);
+			window.clearInterval(window.toUrl);
+		});
+		//点击出现登录注册弹窗
+		// $('.to_buyit').off('click').on('click',function(){
+		// 	$('.dr_Registsign,.dr_blackwall').show();
+		// });
+		//点击出现注册框
+		$('.Button_join').off('click').on('click',function(){
+			$('.dr_Thelogin').hide();
+			$('.dr_Registered').show();
+		});
+		//点击出现登录框
+		$('.Regis_todl a').off('click').on('click',function(){
+			$('.dr_Thelogin').show();
+			$('.dr_Registered').hide();
+		});
+		//点击出现验证弹框
+		/*$('.to_shopcart, .to_buyit').off('click').on('click',function(){
+			var type = $(this).data('info');//获取用户点击的是购物车，还是立即购买
+			var GoodsParams = goodsInfo();
+			if (GoodsParams == false) {
+				return false;
+			}
+
+			window.type_flag = type;
+		
+			$('.dr_Verificase,.dr_blackwall').show();
+		});*/
+		
+   		
+
+		//获取语音验证码
+		$('.Verificacode span').off('click').on('click',function(){
+			$(this).addClass('sending').html('90秒后重新发送').attr('disabled','true');
+			$('.theSame_wrong').addClass('thejt_sucess').find('span').html('获取成功，请留意接听4000113520的来电');
+			var gtpTimeNum = 90;
+			var gtpTimer = setInterval(function(){
+				gtpTimeNum--;
+				$('.Verificacode span').html(gtpTimeNum+'秒后重新发送');
+				if(gtpTimeNum <= 0){
+					clearInterval(gtpTimer);
+					$('.Verificacode span').removeClass('sending').html('获取语音验证码').attr('disabled','false');
+				}
+			},1000);
+		});
+		
+		//调用图片滚动组件(浏览记录)
+		var Thescrol = new Imgscroll().init({
+			id: '#Browsering',
+			prev: '#Browsering .SmallRing-preend,#Browsering .SmallRing-pre',
+			next: '#Browsering .SmallRing-next,#Browsering .SmallRing-nextend',
+			scrollNum: 1,
+			theMag: 12,
+			Alllist:6,
+			theway:false,
+			ntendClass:'SmallRing-nextend',
+			ntClass:'SmallRing-next',
+			pendClass:'SmallRing-preend',
+			peClass:'SmallRing-pre'
+		});
+		
+		//饰品页面JS
+		//点击增加数量
+		$('.Toadd').off('click').on('click',function(){
+			var i = parseInt($('.ringbuy_Choose-four em').html());
+			$('.ringbuy_Choose-four em').html(i+1);
+			$('.ringbuy_Choose-four input').val(i+1)
+		});
+		//点击减少数量
+		$('.Toreduce').off('click').on('click',function(){
+			var i = parseInt($('.ringbuy_Choose-four em').html());
+			if(i==1){
+				return false;
+			}else{
+				$('.ringbuy_Choose-four em').html(i-1);
+				$('.ringbuy_Choose-four input').val(i-1)
+			}
+		});
+                //调用图片滚动组件(饰品页的热门商品)
+		var Thescrol = new Imgscroll().init({
+			id: '#Hotdpover',
+			prev: '#Hotdpover .SmallRing-preend,#Hotdpover .SmallRing-pre',
+			next: '#Hotdpover .SmallRing-next,#Hotdpover .SmallRing-nextend',
+			scrollNum: 1,
+			theMag: 44,
+			theway:false,
+			ntendClass:'SmallRing-nextend',
+			ntClass:'SmallRing-next',
+			pendClass:'SmallRing-preend',
+			peClass:'SmallRing-pre'
+		});
+		//调用图片滚动组件(饰品页的人气商品)
+		var Popularcrol = new Imgscroll().init({
+			id: '#Popularity',
+			prev: '#Popularity .SmallRing-pre',
+			next: '#Popularity .SmallRing-next',
+			scrollNum: 1,
+			theMag: 0,
+			Alllist:3,
+			overnum:3
+		});
+     //异步获取组合商品热门商品信息
+    $.get(hotmatchUrl,  {ParentID: ParentID, StyleId:StyleId,CategoryID:CategoryID,ispink:ispink}, function(res) {
+	$('#hotmatch').html(res.html);
+ 
+                    //背景图 cname 价格初始化
+                $('.hot_Image').attr('src',hotImage); 
+                $('.hot_CName').html($('.from_cname').html());
+	        $('#zh_main_price').html($('.from_price').html());
+                //调用图片滚动组件(饰品页的热门商品)
+		var Thescrol = new Imgscroll().init({
+			id: '#Hotdpover',
+			prev: '#Hotdpover .SmallRing-preend,#Hotdpover .SmallRing-pre',
+			next: '#Hotdpover .SmallRing-next,#Hotdpover .SmallRing-nextend',
+			scrollNum: 1,
+			theMag: 44,
+			theway:false,
+			ntendClass:'SmallRing-nextend',
+			ntClass:'SmallRing-next',
+			pendClass:'SmallRing-preend',
+			peClass:'SmallRing-pre'
+		});
+		//调用图片滚动组件(饰品页的人气商品)
+		var Popularcrol = new Imgscroll().init({
+			id: '#Popularity',
+			prev: '#Popularity .SmallRing-pre',
+			next: '#Popularity .SmallRing-next',
+			scrollNum: 1,
+			theMag: 0,
+			Alllist:3,
+			overnum:3
+		});
+                //调用图片滚动组件(产品缩略图)
+		var Imgscrol = new Imgscroll().init({
+			id: '#SmallRing-photo',
+			prev: '#SmallRing-photo .SmallRing-pre,#SmallRing-photo .SmallRing-preend',
+			next: '#SmallRing-photo .SmallRing-next,#SmallRing-photo .SmallRing-nextend',
+			scrollNum: 1,
+			theMag: 20,
+			Alllist:4,
+			theway:false,
+			ntendClass:'SmallRing-nextend',
+			ntClass:'SmallRing-next',
+			pendClass:'SmallRing-preend',
+			peClass:'SmallRing-pre'
+		});
+//			/*tab的切换*/
+		$('.ringbuy_hotdp-top span').each(function(index){
+			$(this).off('click').on('click',function(){
+				$(this).addClass('Details-tab-click').siblings().removeClass('Details-tab-click');
+				$('.HotDetails-all .HotDetails_same').eq(index).show().siblings().hide();
+				if($(this).text() == '热门推荐'){
+					ga('send', 'event', '热门推荐', 'click', ' pc_remengtuijian', 0);
+				} else {
+					ga('send', 'event', '人气组合', 'click', 'pc_renqizuhe', 0);
+				}
+			})
+		});
+
+                
+	});
+//		/*tab的切换*/
+//		$('.ringbuy_hotdp-top span').each(function(index){
+//			$(this).off('click').on('click',function(){
+//				$(this).addClass('Details-tab-click').siblings().removeClass('Details-tab-click');
+//				$('.HotDetails-all .HotDetails_same').eq(index).show().siblings().hide();
+//				if($(this).text() == '热门推荐'){
+//					ga('send', 'event', '热门推荐', 'click', ' pc_remengtuijian', 0);
+//				} else {
+//					ga('send', 'event', '人气组合', 'click', 'pc_renqizuhe', 0);
+//				}
+//			})
+//		});
+		//人气组合信息，商品的勾选
+		var iszh_buy = false;
+		$('#zh_goods_list input').live('click', function() {
+                 
+			var zh_main_price = 0;
+			if ($('#zh_main_price').html()) {
+				zh_main_price = parseInt($('#zh_main_price').html().replace('¥', ''));
+				if (!zh_main_price) {
+					zh_main_price = 0;
+				}
+			}
+			
+			var _that = $(this);
+			var oprice = parseInt(_that.attr('oprice')); //商品原价
+			if (!oprice) {
+				oprice = 0;
+			}
+			var dprice = parseInt(_that.attr('dprice')); //商品优惠价
+			if (!dprice) {
+				dprice = 0;
+			}
+
+			//组合数量
+			var zhinfo_num = parseInt($('#zhinfo_num').html());
+			if (!zhinfo_num) {
+				zhinfo_num = 0;
+			}
+			//组合价格,组合未进行尾数处理的
+			var nzhprice = parseInt($('#zhinfo_tprice').attr('data-zhoprice'));
+			if (!nzhprice) {
+				nzhprice  = zh_main_price;
+			}
+			if (!_that.prop('checked')) {
+				_that.prop('checked', false);
+	            zhinfo_num--;
+	             if (zhinfo_num < 0) {
+	            	zhinfo_num = 0;
+	            }
+	            nzhprice -= (oprice - dprice);
+	            if (nzhprice < 0) {
+	            	nzhprice = 0;
+	            }
+			} else {
+				_that.prop('checked', true);
+	            zhinfo_num++; 
+	            nzhprice += (oprice - dprice);
+			}
+			if (zhinfo_num == 0) {
+				nzhprice = 0;
+				iszh_buy = false;
+			}
+			else {
+				iszh_buy = true;
+			}
+			//保存未进行优化的组合价格
+			$('#zhinfo_tprice').attr('data-zhoprice', nzhprice);
+			//是否不进行尾数优化
+			var isnotendprice = $(this).attr('isnotendprice');
+			if (!isnotendprice) {
+				isnotendprice = "0"
+			}
+			//组合价格进行优化
+			if (isnotendprice == "0") {
+				nzhprice = endWellPrice(nzhprice);
+			}
+			$('#zhinfo_num').html(zhinfo_num);
+			$('#zhinfo_tprice').html(nzhprice);
+		});
+		//erp人气组合立即购买
+                        $('#zhinfo_to_buyit').bind('click', function() {
+                    //立即购买
+                    var type = 1;
+                    $('#choose_type').val(type);
+                    //用户是否选择组合商品
+                    if (!iszh_buy) {
+                        $('#rqhzbox').show();
+                        return false;
+                    }
+                    if (zh_isclick) {
+                        return false;
+                    }
+                    zh_isclick = true;
+                    var GoodsParams = goodsInfo();
+                    if (!GoodsParams) {
+                        zh_isclick = false;
+                        return false;
+                    }
+                    //获取人气组合信息
+                    GoodsParams = getZhGoodsParams(GoodsParams);
+                    $.post(postCartUrl, {data: GoodsParams}, function (res) {
+                        //console.log(res);return false;
+                        switch (res.result) {
+                            case - 2:
+                                $('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+                                $('.dr_Registsign,.dr_blackwall').show();
+                                $('#papLogin').attr('src','https://passport.darryring.com/other');
+                                window.loginInterval = setInterval(function () {
+                                    $.get('/ajax/login', function (res) {
+                                        if (res.result >= 0) {
+                                            clearInterval(window.loginInterval);
+                                            $('.dr_Registsign,.dr_blackwall').hide();
+                            				islogin = 1;
+                                            //location.reload();
+                                        }
+                                    });
+                                }, 2000);
+                                isclick = true;
+                                break;
+                            case - 3:
+                                $('.dr_Verificase,.dr_blackwall').show();
+                                $('#choose_type').val(type);
+                                isclick = true;
+                                break;
+                            case - 5:
+                                $('.Verifica_all.Verifica_first').hide();
+                                $('.dr_Verificase,.dr_blackwall, .Verifica_buyit').show();
+                                $('#name').text('尊敬的' + res.name + '先生，您好！');
+                                isclick = true;
+                                break;
+                            case - 8:
+                                /*var errorwaring = new Popping().init({
+                                 content : res.message,
+                                 hideTime : 2000
+                                 });*/
+                                alert(res.message);
+                                isclick = true;
+                                break;
+                            default:
+                                if (type != 1) {
+                                    $('.dr_blackwall,.cartgetit').show();
+                                    //shoptcclose();
+                                    isclick = true;
+                                } else {
+                                    window.location.href = CartIndexUrl;
+                                }
+                        }
+                    });
+                    return false;
+                });
+		//官网人气组合加入购物车
+		var group_isclick = false;
+                $('#group_to_cartit').live('click', function () {
+                    //加入购物车
+                    var type = 0;
+                    $('#choose_type').val(type);
+                    //用户是否选择组合商品
+                    if (!iszh_buy) {
+                        $('#rqhzbox').show();
+                        return false;
+                    }
+                    if (group_isclick) {
+                        return false;
+                    }
+                    group_isclick = true;
+                    //主商品信息
+                    var GoodsParams = goodsInfo();
+                    if (!GoodsParams) {
+                        group_isclick = false;
+                        return false;
+                    }
+                    //组合商品的信息
+                    GroupParams = getGroupGoodsParams();
+
+                    GroupParams.push(GoodsParams);
+                    eachAdd(GroupParams, type);
+
+                    return false;
+                });
+                
+                //人气组合关闭弹窗
+                $('.popBox-close, .submitBox').off('click').on('click', function () {
+                    $('#rqhzbox').hide();
+                    if ($(this).hasClass('forSuccessful-close')) {
+                        location.reload();
+                    }
+                });
+                
+                
+                
+     
+     /** 2018-06-08,裸钻选购流程优化 **/
+		
+		//判断是否输入有效数字
+		var expectPrice = '';
+		$('#expectPrice').keyup(function(){
+			expectPrice = parseInt($.trim($(this).val()));
+			if(!isNaN(expectPrice)){
+				$(this).val(expectPrice);
+			}else{
+				$(this).val('');
+			}
+		});
+		
+
+		var isClick = 0;
+		//var first = 0;
+		var	defaultDetail = $('.ringbuy_Choose-list .ringbuy_Choose_Diamonds a');
+		var	defaultIndex = $('.ringbuy_Choose-list .chooseit').index();
+
+		//点击换一批
+		$('#changeChooseBtn').off('click').on('click',function(){
+			if(isClick > 0){
+				return false;
+			}
+			isClick = 1;
+			changeChoose();
+		});
+		//点击搜索
+		$('#expectChange').off('click').on('click',function(){
+			if(isClick > 0){
+				return false;
+			}
+			isClick = 1;
+			searchChoose();
+		});
+
+		//点击重置按钮
+		$('#expectReset').off('click').on('click',function(){
+			$('#expectReset').removeClass('active');
+			/*$('.ringbuy_Choose-list a').remove();
+			$('.ringbuy_Choose-list').prepend(defaultDetail);*/
+			$('.ringbuy_Choose-list .ringbuy_Choose_Diamonds a').remove();
+			$('.ringbuy_Choose-list .ringbuy_Choose_Diamonds').append(defaultDetail);
+			changeNum = 0;
+			oldPrice = 0;
+			$('#expectPrice').val('');
+			$("#main-stones a").eq(defaultIndex).trigger('click');
+			$("#expectNullTips").hide();
+			$('#expectNull').hide();
+			$('#fHighmade').show();
+			$('.changeChoose').show();
+		});
+
+		//点击换一批
+		function changeChoose(){
+
+			/*if(first == 0){
+				defaultDetail = $('.ringbuy_Choose-list a');
+				defaultIndex = $('.ringbuy_Choose-list .chooseit').index();
+				first = 1;
+			}*/
+			$('#expectReset').addClass('active');
+			var price = $('#expectPrice').val();
+			if(price != oldPrice){
+				oldPrice = price;
+				changeNum = 1;
+			} else {
+				changeNum++;
+			}
+
+			var material = $('.ringbuy_Choose-first i.chooseit').attr('material');
+
+			$.post(diamondUrl,{gid:ParentID,styleId:StyleId,material:material,price:price,page:changeNum},function(res){
+				if(res.result < 0){
+					isClick = 0
+					alert(res.message);
+					return false;
+				}
+				if(res.result > 0){
+					$('.ringbuy_Choose-list a').remove();
+					$('.ringbuy_pirce span').hide();
+					$('#changeChooseBtn').hide();
+					if(price > 0){
+						$('#expectNull').show();
+					} else {
+						$("#expectNullTips").show();
+					}
+
+					var name = SeriesName+' '+StyleName;
+					$('.back_CName').html(name);
+					$('.ring_CName').html(name);
+					$('.hot_CName').html(name);
+					$('.salesPrice').html('');
+					$('#zh_main_price').html('');
+
+					var param = '<li><span>主钻重量: </span></li><li><span>钻石颜色: </span></li><li><span>钻石净度: </span></li><li><span>钻石切工: </span></li>';
+					$('.ringbuy_Parameter li').remove();
+					$('.ringbuy_Parameter').prepend(param);
+
+
+					$('.p_clarity span').html('');
+					$('.p_color span').html('');
+					$('.p_weight span').html('');
+					$('.p_cut span').html('');
+					$('.p_tweight span').html('');
+					$('.p_polish span').html('');
+					$('.p_symm span').html('');
+					$('.p_fluo span').html('');
+					isClick = 0
+
+				} else {
+					changeNum = res.page;
+					$('.ringbuy_Choose-list .ringbuy_Choose_Diamonds a').remove();
+					var list = res.data;
+					var str = '';
+					for(var i=0;i<list.length;i++){
+						var info = JSON.stringify(list[i]);
+						if(i == 0){
+							str += '<a class="chooseit" data-info=\''+info+'\'>'+list[i]['Carat']+'分'+list[i]['Color']+'色</a>';
+						} else {
+							str += '<a data-info=\''+info+'\'>'+list[i]['Carat']+'分'+list[i]['Color']+'色</a>';
+						}
+					}
+
+					if(changeNum == 10 && price < 1){
+						$('#expectNullTips').show();
+					} else {
+						$('#expectNullTips').hide();
+					}
+					$('#expectNull').hide();
+					$('.ringbuy_pirce span').show();
+					$('#changeChooseBtn').show();
+
+					$('.ringbuy_Choose-list .ringbuy_Choose_Diamonds').prepend(str);
+					$("#main-stones a").eq(0).trigger('click');
+					$('.ringbuy_Choose-list').show();
+					isClick = 0;
+					
+				}
+			});
+		}
+
+		//点击搜索
+		//var prevNum = 0;
+		function searchChoose(){
+			var seaNum = parseInt($.trim($('#expectPrice').val()));
+			if(seaNum == 0 || isNaN(seaNum)){
+				alert('请输入预期价位~');
+			}else if(oldPrice == seaNum){
+				return false;
+			}else{
+				oldPrice = seaNum;
+				changeNum = 0;
+				changeChoose();
+			}
+		};
+		
+		$('body').on('click',function(){
+			$('#drCopyTips').hide();
+		});
+		$('#drCopyTips').on('click',function(){
+			return false;
+		});
+		
+		/** 2018-06-08,裸钻选购流程优化  end**/
+
+
+	});
+	function eachAdd(GroupParams,type){
+                    //遍历加入购物车
+                    var ti = 0;
+                    var si = 0;
+                    var fi = 0;
+                    var ecode = 0;
+                    var message = '';
+                    var name = '';
+                    for (var i = 0; i < GroupParams.length; i++) {
+                        (function (i) {
+                            function toPost() {
+                                //顺序提交，防止并发，购物车主表记录不对问题
+                                if (i > fi) {
+                                    window.requestAnimationFrame(toPost);
+                                } else {
+                                    $.post(postCartUrl, {data: GroupParams[i]}, function (res) {
+                                        ti++;
+                                        fi++;
+                                        switch (res.result) {
+                                            case - 2:
+                                                ecode = -2;
+                                                break;
+                                            case - 3:
+                                                ecode = -3;
+                                                break;
+                                            case - 4:
+                                                ecode = -4;
+                                            case - 5:
+                                                ecode = -5;
+                                                name = res.name;
+                                                break;
+                                            case - 8:
+                                                ecode = -8;
+                                                message = res.message;
+                                                break;
+                                            default:
+                                                si++
+                                        }
+                                    });
+                                }
+                            }
+                            toPost();
+                        })(i);
+                    }
+                    waitAllFinsh();
+                    //等待所有提交完成
+                    function waitAllFinsh() {
+                        if (ti < GroupParams.length) {
+                            window.requestAnimationFrame(waitAllFinsh);
+                        } else {
+                            //所有都成功
+                            if (si == GroupParams.length) {
+                                $('.dr_blackwall,.cartgetit').show();
+            			group_isclick = false;
+                                suit_isclick = true;
+                                //shoptcclose();
+                            } else {
+                                switch (ecode) {
+                                    case - 2:
+                                        $('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+                                        $('.dr_Registsign,.dr_blackwall').show();
+                                        $('#papLogin').attr('src','https://passport.darryring.com/other');
+                                        window.loginInterval = setInterval(function () {
+                                            $.get('/ajax/login', function (res) {
+                                                if (res.result >= 0) {
+                                                    clearInterval(window.loginInterval);
+                                                    $('.dr_Registsign,.dr_blackwall').hide();
+                            						islogin = 1;
+                                                    //location.reload();
+                                                }
+                                            });
+                                        }, 2000);
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        break;
+                                    case - 3:
+                                        $('.dr_Verificase,.dr_blackwall').show();
+                                        $('#choose_type').val(type);
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        break;
+                                    case - 4:
+                                        alert('商品提交失败，请您先购买求婚钻戒哦，或查看是否存在未支付的求婚钻戒订单呢');
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        break;
+                                    case - 5:
+                                        $('.Verifica_all.Verifica_first').hide();
+                                        $('.dr_Verificase,.dr_blackwall, .Verifica_buyit').show();
+                                        $('#name').text('尊敬的' + name + '先生，您好！');
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        break;
+                                    case - 8:
+                                        alert(message);
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        break;
+                                    default:
+                                        $('.dr_blackwall,.cartgetit').show();
+                                        group_isclick = false;
+		                        		suit_isclick = true;
+                                        //shoptcclose();
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                };
+	//erp人气组合购买方式
+	//GoodsParams 主商品的信息
+	function getZhGoodsParams(GoodsParams) {
+        GoodsParams.groupid = $('#zh_goods_list input').eq(0).attr('groupid');
+        var group_gid_arr = [];//勾选组合的商品
+        $('#zh_goods_list input').each(function(){
+        	if ($(this).prop('checked')) {
+        		group_gid_arr.push($(this).attr('gid'));
+        	}
+        });
+        GoodsParams.group_gid_arr = group_gid_arr;
+        return GoodsParams;
+	}
+
+	//官网人气组合购买方式
+	function getGroupGoodsParams() {
+		var bparams = [];
+		$('#zh_goods_list input').each(function(){
+			if (!$(this).prop('checked')) {
+				return true;
+			}
+			var id = $(this).attr('gid');
+			var mainStones = $(this).data('mainstone');
+			var handSize = $(this).data('handsizes');
+			var matelMaterials = $(this).data('metalmaterials');
+			var carved = '';
+			var cateid = $(this).attr('cateid');
+			var style = $(this).attr('styleid');
+			var totalPrice = $(this).attr('oprice');
+
+			//对戒
+			if (cateid == 'B') {
+				var man_Price = $(this).attr('mprice');
+				var woman_Price = $(this).attr('wprice');
+				var style1 = $(this).attr('wstyleid');
+				var wmainStones = $(this).data('wmainstone');
+				var whandSize = $(this).data('whandsizes');
+				var man={MainStones:mainStones,HandSizes:handSize,carved:carved,price:man_Price,style:style};
+				var women={MainStones:wmainStones,HandSizes:whandSize,carved:carved,price:woman_Price,style:style1};
+				var GoodsParams = {
+					id: id,
+					MainStones: mainStones,
+					HandSizes: handSize,
+					MetalMaterials: matelMaterials,
+					carved: carved,
+					price: totalPrice,
+					style: style,
+					source_type:0,
+					man:man,
+					women:women,
+					cateid:cateid
+				};
+				bparams.push(GoodsParams);
+			} else {
+				var GoodsParams = {
+					id: id,
+					MainStones: mainStones,
+					HandSizes: handSize,
+					MetalMaterials: matelMaterials,
+					carved: carved,
+					price: totalPrice,
+					style: style,
+					cateid:cateid
+				};
+				bparams.push(GoodsParams);
+			}
+		});
+
+		return bparams;
+	}
+
+    isclick = true;
+    //套装加入购物车点击验证
+	suit_isclick = true;
+    //定义缓存
+    var Checksize = $('#HandSizes');
+    var Checkyhkz = $('#carved');
+    $('.to_shopcart, .to_buyit').off('click').on('click', function () {
+    	//预售商品，预售期前，后，都不可以购买
+    	if($(this).hasClass('disabled')){
+			return;
+		}
+
+        var GoodsParams = goodsInfo();
+        if (!GoodsParams) {
+            return false;
+        }
+    		var type = $(this).data('info');
+
+    		//立即购买要先登录
+			if (type == 1 && islogin == 0) {
+				$('.dr_loginIf,.dr_blackwall').show();
+				return false;
+			}
+        if ($(this).hasClass('suit_to_cart')) {
+            //套装 加入购物车
+            if (!suit_isclick) {
+    			alert('正在加入，请耐心等待');
+	            return false;
+	        }
+	        suit_isclick = false;
+            var sparams = [];
+            $(this).parents('.rbs_view').find('.rbs_viewList .suit').each(function () {
+                var id = $(this).attr('gid');
+                var mainStones = $(this).data('mainstone');
+                var handSize = $(this).data('handsizes');
+                var matelMaterials = $(this).data('metalmaterials');
+                var carved = '';
+                var cateid = $(this).attr('cateid');
+                var style = $(this).attr('styleid');
+                var totalPrice = $(this).attr('oprice');
+                var num = $(this).attr('num');
+                //对戒
+                if (cateid == 'B') {
+                    var man_Price = $(this).attr('mprice');
+                    var woman_Price = $(this).attr('wprice');
+                    var style1 = $(this).attr('wstyleid');
+                    var wmainStones = $(this).data('wmainstone');
+                    var whandSize = $(this).data('whandsizes');
+                    var man = {MainStones: mainStones, HandSizes: handSize, carved: carved, price: man_Price, style: style};
+                    var women = {MainStones: wmainStones, HandSizes: whandSize, carved: carved, price: woman_Price, style: style1};
+                    var GoodsParams = {
+                        id: id,
+                        MainStones: mainStones,
+                        HandSizes: handSize,
+                        MetalMaterials: matelMaterials,
+                        carved: carved,
+                        price: totalPrice,
+                        style: style,
+                        source_type: 0,
+                        man: man,
+                        women: women,
+                        cateid: cateid
+                    };
+                    
+                } else {
+                    var GoodsParams = {
+                        id: id,
+                        MainStones: mainStones,
+                        HandSizes: handSize,
+                        MetalMaterials: matelMaterials,
+                        carved: carved,
+                        price: totalPrice,
+                        style: style,
+                        cateid: cateid
+                    };
+                }
+                if (num > 1) {
+                    for (var i = 1; i <= num; i++) {
+                        sparams.push(GoodsParams);
+                    }
+                } else {
+                    sparams.push(GoodsParams);
+                }
+            });
+            sparams.shift();
+            sparams.unshift(GoodsParams);
+
+            eachAdd(sparams, type);
+            return false;
+        } else {
+            zh_isclick = false;
+            sessionStorage.setItem("data" + id, Checksize.val());
+            sessionStorage.setItem("data2" + id, Checkyhkz.val());
+            if (!isclick) {
+                return false;
+            }
+            isclick = false;
+            var type = $(this).data('info');//获取用户点击的是购物车，还是立即购买
+            // console.log(GoodsParams);return false;
+            var identity = $('#queryNum').val();
+            window.type_flag = 1;
+            if (GoodsParams) {
+                $.post(postCartUrl, {data: GoodsParams}, function (res) {
+                    switch (res.result) {
+                        case - 2:
+                            $('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+                            $('.dr_Registsign,.dr_blackwall').show();
+                            $('#papLogin').attr('src','https://passport.darryring.com/other');
+                            window.loginInterval = setInterval(function () {
+                                $.get('/ajax/login', function (res) {
+                                    if (res.result >= 0) {
+                                        clearInterval(window.loginInterval);
+                                        $('.dr_Registsign,.dr_blackwall').hide();
+                            			islogin = 1;
+                                        //location.reload();
+                                    }
+                                });
+                            }, 2000);
+                            isclick = true;
+                            break;
+                        case - 3:
+		                    	//加入购物车
+		                    	if (is_query == 1 && type == 0) {
+		                    		$('.Verifica_all').hide();
+		                    		$('#isCheckCar,.dr_blackwall,.dr_Verificase').show();
+		                    		
+		                    	}else if (is_query == 1 && type == 1) {
+		                    		//立即购买
+		                    		$('.Verifica_all').hide();
+		                    		$('#isCheckBuy,.dr_blackwall,.dr_Verificase').show();
+		                    	} else{
+		                    		$('.dr_Verificase,.dr_blackwall').show();
+		                    		$('.Verifica_all.Verifica_first').show();
+		                        	$('#choose_type').val(type);
+		                    	}
+
+                            isclick = true;
+                            break;
+                        case - 5:
+                            $('.Verifica_all.Verifica_first').hide();
+                            $('.dr_Verificase,.dr_blackwall, .Verifica_buyit').show();
+                            $('#name').text('尊敬的' + res.name + '先生，您好！');
+                            isclick = true;
+                            break;
+                        case - 8:
+                            /*var errorwaring = new Popping().init({
+                             content : res.message,
+                             hideTime : 2000
+                             });*/
+                            alert(res.message);
+                            isclick = true;
+                            break;
+                        default:
+                            if (type != 1) {
+                                $('.dr_blackwall,.cartgetit').show();
+                                //shoptcclose();
+                                isclick = true;
+                            } else {
+                                window.location.href = CartIndexUrl;
+                            }
+                    }
+                });
+            }
+            return false;
+        }
+    });
+		
+
+		//不登录
+	    $('.dr_noLogin').off('click').on('click', function(){
+	    	$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+	    	$('.Verifica_all.Verifica_first').show();
+	    	var GoodsParams = goodsInfo();
+    		//套装 加入购物车
+    		if(!GoodsParams){
+    			return false;
+    		}
+    		var type = $('.to_buyit').data('info');
+    		$.post(postCartUrl, {data: GoodsParams}, function (res) {	
+                switch (res.result) {
+                    case - 3:
+                    	//加入购物车
+                    	if (is_query == 1 && type == 0) {
+                    		$('.Verifica_all').hide();
+                    		$('#isCheckCar,.dr_blackwall,.dr_Verificase').show();
+                    		
+                    	}else if (is_query == 1 && type == 1) {
+                    		//立即购买
+                    		$('.Verifica_all').hide();
+                    		$('#isCheckBuy,.dr_blackwall,.dr_Verificase').show();
+                    	} else{
+                    		$('.dr_Verificase,.dr_blackwall').show();
+                        	$('#choose_type').val(type);
+                    	}
+
+                        isclick = true;
+                        break;
+                    case - 5:
+                        $('.Verifica_all.Verifica_first').hide();
+                        $('.dr_Verificase,.dr_blackwall, .Verifica_buyit').show();
+                        $('#name').text('尊敬的' + res.name + '先生，您好！');
+                        isclick = true;
+                        break;
+                    case - 8:
+                        alert(res.message);
+                        isclick = true;
+                        break;
+                    default:
+                        if (type != 1) {
+                            $('.dr_blackwall,.cartgetit').show();
+                            isclick = true;
+                        } else {
+                            window.location.href = CartIndexUrl;
+                        }
+                }
+            });
+	    });
+
+	    //登录
+	    $('.dr_toLogin').off('click').on('click', function(){
+	    	$('.dr_sametc,.dr_blackwall, .Verifica_nobuy').hide();
+                $('.dr_Registsign,.dr_blackwall').show();
+                $('#papLogin').attr('src','https://passport.darryring.com/other');
+                window.loginInterval = setInterval(function () {
+                    $.get('/ajax/login', function (res) {
+                        if (res.result >= 0) {
+                            clearInterval(window.loginInterval);
+                            $('.dr_Registsign,.dr_blackwall').hide();
+                            islogin = 1;
+                            //location.reload();
+                        }
+                    });
+                }, 2000);
+
+            return false;
+	    })
+
+	
+		//修改身份证号
+		$('#editNum,#editNum1').off('click').on('click',function(){
+			var chooseType = $(this).attr('chooseType');
+			$('#choose_type').val(chooseType);
+			$('#isCheckCar,#isCheckBuy').hide();
+			$('.dr_Verificase,.dr_blackwall,.Verifica_first').show();
+		});
+
+		//加入购物车、立即购买
+		$('#addToCar,#addToBuy').off('click').on('click',function(){
+			var _this = $(this);
+			var identity = $(this).data('identity');
+			var type = $(this).data('type');
+			var chooseType = $(this).attr('chooseType');
+			var GoodsParams = goodsInfo();
+			if (GoodsParams) {
+				//是否是人气组合的购买
+				if (zh_isclick) {
+					GoodsParams = getZhGoodsParams(GoodsParams);
+				}
+				$.post(postLoveCartUrl, {data: GoodsParams, identity: identity, type: type, chooseType: chooseType}, function(res) {
+					if (res.result == 0 && chooseType == 1) {
+						window.location.href = OrderIndexUrl;
+						return false;
+					}else {
+						_this.parent().parent().hide();
+						$('#okToCar').show();
+						//window.location.href = CartIndexUrl;
+					}
+				});
+			}
+		});
+
+        
+	$('#query-turelove').off('click').on('click', function() {
+		//选择是立即结算，还是加入购物车
+		var chooseType = $('#choose_type').val();
+    	var identity = $('#queryNum').val();
+    	var type = $('.querySelect').data('type');
+	    	var query_id = $(this).data('id');
+    	var msg = '';
+		//记录用户的真爱验证点击数
+		if (typeof(_dr) != 'undefined') {
+			_dr.init({'account': 'DarryRing-WAP', 'event': 'lovecheck'});
+		}
+	    	switch (type) {
+	    		case 1:
+	    			if (IdentityValid(identity) != true) {
+			    		msg = '请输入有效证件号码';
+			    	}
+			    	break;
+			    case 3:
+			    	if (PPIdValid(identity) != true) {
+			    		msg = '请输入有效证件号码';
+			    	}
+			    	break;
+			    case 2:
+			    	//var identity = identity.replace('(', '').replace(')', '');
+	                
+		    		var flag = false;  
+		    		if (identity.length == 8) {
+						flag = HKIdValid(identity);
+						if (flag == false) {
+							flag = MCIdValid(identity);
+						}
+					} else {
+						flag = TWIdValid(identity);
+					}
+
+					if(flag == false && identity.length == 10){
+	                     flag = true;
+					}
+
+		    		if (flag != true) {
+		    			msg = '请输入有效证件号码';
+		    		}
+	                
+		    		break;
+		    	default:
+			    	if (identity == '' || identity.length < 7) {
+			    		msg = '请输入有效证件号码';
+			    	}
+	    	}
+
+    	if (msg == '') {
+    		$('.dr_yzwrong').text('');
+	    		$.get(checkLoveUrl, {'identity': identity, 'isAjax': 1, type : type, query_id: query_id}, function(res) {
+    			if (res.result >= 0) {
+    				var GoodsParams = goodsInfo();
+    				if (GoodsParams) {
+    					//是否是人气组合的购买
+    					if (zh_isclick) {
+    						GoodsParams = getZhGoodsParams(GoodsParams);
+    					}
+    					$.post(postLoveCartUrl, {data: GoodsParams, identity: identity, type: type, chooseType: chooseType}, function(res) {
+    						if (res.result == 0 && chooseType == 1) {
+    							window.location.href = OrderIndexUrl;
+    							return false;
+    						}else {
+	    							$('.Verifica_first').hide();
+	    							$('.dr_Verificase,.dr_blackwall,#okToCar').show();
+
+	    					// 		$('.Verifica_nobuy').show();
+										// if (window.type_flag != 1) {
+										// 	// alert('添加成功');
+										// 	toRedirect('<i>{0}秒后</i>，自动跳转至购物车');
+
+										// } else {
+										// 	// toRedirect('自动跳转至购物车');
+										// 	$('#countDown').hide();
+										// 	//window.location.href = CartIndexUrl;
+										// }
+    						}
+    					});
+    				}
+    			}else if(res.result == -1){
+					//记录用户的真爱验证点击失败数
+					if (typeof(_dr) != 'undefined') {
+						_dr.init({'account': 'DarryRing-WAP', 'event': 'lovecheck_fail'});
+					}
+                     alert(res.message);
+					 return false;
+    			}
+    		});
+    	} else {
+    		$('.dr_yzwrong').text(msg);
+			//记录用户的真爱验证点击失败数
+			if (typeof(_dr) != 'undefined') {
+				_dr.init({'account': 'DarryRing-WAP', 'event': 'lovecheck_fail'});
+			}
+    	}
+    });
+
+
+	//预售产品倒计时
+	if($('.gitLoveMoneyTime1').length> 0){
+        $('.ringbuy_Button .to_shopcart').addClass('disabled');
+        $('.ringbuy_Button .to_buyit').addClass('disabled');
+        //购买倒计时	
+        var isSaleStart= false, gitLoveMoneyTime1Fun= new countTimeFun({
+            dom: '.gitLoveMoneyTime1',
+            callback: function () {
+                if(isSaleStart){
+                    return;
+                }
+                $('.ringbuy_Button .to_shopcart').removeClass('disabled');
+                $('.ringbuy_Button .to_buyit').removeClass('disabled')
+                isSaleStart= true;
+
+                //停止售卖倒计时
+                var isSaleEnd= false, gitLoveMoneyTime2Fun= new countTimeFun({
+                    dom: '.gitLoveMoneyTime2',
+                    callback: function () {
+                        if(isSaleEnd){
+                            return;
+                        }
+                        $('.ringbuy_Button .to_shopcart').addClass('disabled');
+                        $('.ringbuy_Button .to_buyit').addClass('disabled');
+
+                        $('.ringbuy_pirce').append('<i style="color:red;font-size:18px;font-weight:bold"> &nbsp售罄</i>');
+                        isSaleEnd= true;
+                    }
+                });
+            }
+        });
+
+	}
+
+
+	var res = getCookie('user_city_stores');//多家店铺
+	if(res == null) {
+		//定位用户所在城市
+	    $.get('/getUserCity?type=1', function(res) {
+	    	if(res.city != ''){
+	    		setCookie('user_city_stores', JSON.stringify(res));
+				if(res.result ==1) {
+					$('#joinStore').html(res.city);
+		        	$('#joinStore').attr('href', '/store/show-'+res['shop_url'])//实体店显示定位店铺名称
+				} else if(res.result ==2) {
+					$('#joinStore').html(res.city);
+		        	$('#joinStore').attr('href', '/store_list?city='+res['shop_url'])//实体店显示定位店铺名称
+				} else {
+					$('#joinStore').html(res.city);
+		        	$('#joinStore').attr('href', '/store_list?province='+res['shop_url'])//实体店显示定位店铺名称
+				}
+	    	}
+	    });
+	} else {
+		res = JSON.parse(res);
+		if(res.city != ''){
+			if(res.result ==1) {
+				$('#joinStore').html(res.city);
+	        	$('#joinStore').attr('href', '/store/show-'+res.shop_url)//实体店显示定位店铺名称
+			} else if(res.result ==2) {
+				$('#joinStore').html(res.city);
+	        	$('#joinStore').attr('href', '/store_list?city='+res.shop_url)//实体店显示定位店铺名称
+			} else {
+				$('#joinStore').html(res.city);
+	        	$('#joinStore').attr('href', '/store_list?province='+res.shop_url)//实体店显示定位店铺名称
+			}
+		}
+	}
+	
+	
+        //读取缓存
+        toGetStorage();
+        function toGetStorage(){
+                $('#HandSizes').val(sessionStorage.getItem("data"+id));
+                $('#carved').val(sessionStorage.getItem("data2"+id));
+        }
+        loadGoods();//打开页面计算价格
+        
+        //显示套装
+        $('.rbs_item').each(function (index) {
+            $(this).find('p').off('click').on('click', function () {
+                if (!$('.rbs_item').eq(index).hasClass('active')) {
+                    $('.rbs_item').removeClass('active');
+                    $('.rbs_item').eq(index).addClass('active');
+                } else {
+                    $('.rbs_item').removeClass('active');
+                }
+            });
+            var tempNum = Math.floor(index / 4);
+            if (tempNum > 0) {
+                var to = $(this).find('.rbs_view');
+                to.css('top', ((tempNum * 38) + 29) + 'px');
+                console.log(((tempNum * 38) + 29));
+            }
+        });
+		$('.rbs_item').find('.rbs_view').on('mouseleave', function () {
+			$(this).parents('.rbs_item').removeClass('active');
+		})
+        //设置套装容器宽度
+        $('.rbs_view').each(function () {
+            var subNum = $(this).find('.rbs_viewItem').size();
+            if (subNum <= 5) {
+                $(this).width(subNum * 150);
+            } else {
+                $(this).addClass('more');
+            }
+        });
+});
+//设置图片适应
+function control_album() {
+	var UlHeight = $(".haveimg_bigimg").height();
+	var liHeight = $(".haveimg_bigimg li").height();
+	$(".Details-sec,.haveimg_theimg").css({"position":"absolute","left":"-9999px","top":"-9999px"}).show();
+	$(".haveimg_theimg li").show();
+	$(".haveimg_bigimg img").each(function(index){
+		var IMGw = $(this).width();
+		var IMGh = $(this).height();
+		var margin_top = (liHeight-IMGh)/2;
+		if(IMGh > IMGw){
+			if(IMGh > liHeight){
+				$(this).css({'height':liHeight,'width':'auto'});
+			}			
+		}else{
+			if(IMGw > $(".haveimg_bigimg li").width()){
+				$(this).css({'width':'100%','height':'auto'});
+				$(this).css("margin-top",margin_top+"px");
+			}
+		}
+		if(IMGh < UlHeight){
+			$(this).css("margin-top",margin_top+"px");
+		}
+	});
+	$(".haveimg_theimg li").hide().eq(0).show();
+	$(".Details-sec,.haveimg_theimg").css({"position":"relative","left":"0","top":"0"}).hide();
+}
+//倒计时跳转页面
+// function toDjs(){
+// 	var countDown = $('#countDown');
+// 	var ctTimeNum,ctTimer;
+// 	if(countDown){
+// 		ctTimeNum = parseInt(countDown.attr('timeData'));
+// 		ctTimer = setInterval(function(){
+// 			ctTimeNum--;
+// 			countDown.find('i').html(ctTimeNum+'秒后');
+// 			if(ctTimeNum <= 0){
+// 				clearInterval(ctTimer);
+// 				window.location.href = countDown.attr('toUrl');
+// 				$('.dr_sametc,.dr_blackwall').hide();
+// 			}
+// 		},1000);
+// 	}
+// }
+
+var goodsInfo = function() {
+	var mainStones = $('#main-stones a.chooseit').data('info');
+	var handSize = $('#HandSizes option:selected').data('info');
+	var matelMaterials = $('#MetalMaterials i.chooseit').data('info');
+	var carved = $('#carved').val();
+	var style = $('#MetalMaterials i.chooseit').data('id');
+
+	if (typeof(handSize) == "undefined") {
+		alert('请选择合适的手寸');
+		isclick = true;
+		return false;
+	}
+ 
+	if( carved.replace(/[^\x00-\xff]/g,"01").length > 10 ) {
+	    alert('刻字不能超过10个字符');
+	    isclick = true;
+		return false;
+	} 
+
+	var mainStones_Price = 0;
+	if (typeof(mainStones) != "undefined") {
+		mainStones_Price = mainStones.Price;
+	}
+
+	var MRMPice = 0;
+	if (mainStones && mainStones.MainStoneRanges != null && mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices) {
+		var MRMP = mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices;
+
+		for (var i = 0; i < MRMP.length; i++) {
+			if (matelMaterials.MaterialID == MRMP[i].MaterialID) {
+				MRMPice = MRMP[i].AddPrice;
+			}
+		}
+	} else {
+		//mainStones = {Price: 0};
+		mainStones = $('#hMainStone').data('info');
+	}
+
+	var totalPrice = matelMaterials.Price + mainStones.Price * MainStoneCount + handSize.AddPrice + MRMPice;
+    if (typeof(instock) == "undefined") {
+		instock = 0;
+	}
+	var GoodsParams = {
+		id: id,
+		MainStones: mainStones,
+		HandSizes: handSize,
+		MetalMaterials: matelMaterials,
+		carved: $('#carved').val(),
+		price: totalPrice,
+		style: style,
+        instock : instock
+	};
+
+
+	return GoodsParams;
+};
+
+
+var loadGoods = function() {
+	var mainStones = $('#main-stones a.chooseit').data('info');//搭配主钻价格
+	var handSize = $('#HandSizes option:selected').data('info');//手寸价格
+	var matelMaterials = $('#MetalMaterials i.chooseit').data('info');//材质价格
+
+	if(typeof(mainStones) != "undefined" && typeof(mainStones.InStock) != "undefined"){
+		instock = mainStones.InStock;
+	}
+
+	if (typeof(handSize) == "undefined") {
+		handSize = {AddPrice: 0};
+	}
+
+	if (typeof(mainStones) == "undefined") {
+		mainStones = {Price: 0};
+	} 
+
+	//材质加价
+	var MRMPice = 0;
+	if (mainStones.MainStoneRanges != null && mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices) {
+		var MRMP = mainStones.MainStoneRanges[0].MainStoneRangeMateriaPrices;
+
+		for (var i = 0; i < MRMP.length; i++) {
+			if (matelMaterials.MaterialID == MRMP[i].MaterialID) {
+				MRMPice = MRMP[i].AddPrice;
+			}
+		}
+	}
+
+
+	var totalPrice = matelMaterials.Price + mainStones.Price * MainStoneCount + handSize.AddPrice + MRMPice;
+
+	$('.ringbuy_pirce .fl').html('&yen;' + totalPrice);
+	$('.hot_group_price span').html('&yen;' + totalPrice);
+	//改变组合的价格
+	$('#zh_main_price').html(totalPrice);
+	refreshZhGoodsPrice();
+};
+//设置评论列表右侧参数等信息垂直居中
+function AllaskRight(){
+	$('.Details_allask-xq').each(function(index){
+		var pHeight = $(this).parents('li').height();
+		var tHeight = $(this).height();
+		if(tHeight < pHeight){
+			$(this).css('marginTop',(pHeight - tHeight)/2 + 'px');
+		}
+	});
+	$('.Details_allask-person').each(function(index){
+		var pHeight = $(this).parents('li').height();
+		var tHeight = $(this).height();
+		if(tHeight < pHeight){
+			$(this).css('marginTop',(pHeight - tHeight)/2 + 'px');
+		}
+	});
+}
+
+
+//复制链接
+function copyUrl()
+{
+	var Url=document.getElementById("copyTxt");
+	Url.select(); // 选择对象
+	document.execCommand("Copy"); // 执行浏览器复制命令
+	popupBox.msg('复制成功');
+	
+//	popupBox.msg('复制失败，请手动复制链接',{time:2000});
+//	$('#drCopyTips').show();
+}

@@ -1,0 +1,157 @@
+
+.login {
+    height: 565px;
+    background:url(../image/c02.jpg) center no-repeat;
+    position: relative;
+    text-align: center;
+    
+}
+.login .w1360 {
+    position: relative;
+}
+.login .in_for{
+    position: absolute;
+    top: 50px;
+    right:0;
+    width: 312px;
+    height: 390px;
+    border-radius: 3px;
+    border: 0;
+    background: #fff;
+    box-shadow:1px 0px 12px 2px rgba(0,0,0,0.6);
+    overflow: hidden;
+    opacity: .8;
+    padding: 10px 28px;
+   box-sizing:border-box;
+   display: none;
+}
+.login .in_for.appear {
+    display: block;
+}
+.in_for h3{
+    height: 38px;
+    font-size: 18px;
+    color: #9b745c;
+    font-family: "microsoft yahei";
+    text-align: center;
+    line-height: 38px;
+    margin-top: 14px;
+}
+.in_for .verify {
+    height: 50px;
+    display: block;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.in_for .verify input{
+    height: 36px;
+    float: left;
+    width: 100px;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    margin-top: 12px;
+    color: #666;
+    line-height: 38px;
+    padding-left: 38px;
+    overflow: hidden;
+    background: url(../image/ico-uinput.png) no-repeat 11px -96px; 
+}
+.in_for .verify input.password {
+    width: 214px;
+}
+a.tologger {
+    cursor: pointer;
+}
+.in_for .verify button {
+    border: none;
+    color: #9b745c;
+    text-align: center;
+    font-size: 12px;
+    line-height: 36px;
+    float: right;
+    width: 108px;
+    height: 36px;
+    margin: 12px 0 0 0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.in_for p{
+    margin: 18px 0;
+}
+.in_for span{
+    height: 30px;
+    width: 100%;
+    line-height: 30px;
+    position: absolute;
+    right: -66px;
+    top: 107px;
+    text-align: left;
+    opacity: 0.6;
+}
+.enter a {
+    display: inline-block;
+    width: 246px;
+    height: 38px;
+    margin-top: 10px;
+    line-height: 38px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #8b766c;
+    color: #8b766c;
+}
+.enter a:hover {
+    background-color: #8b766c;
+    color:#fff;
+}
+.lat {
+    width: 100%;
+    height: 1px;
+    background-color: #999;
+    position: relative;
+    margin-top: 20px;
+}
+.lat h4{
+    position: absolute;
+    top: -8px;
+    left:50%;
+    transform: translateX(-50%);
+    color: #9b745c;
+    font-size: 12px;
+    text-align: center;
+    background-color: #fff;
+    font-weight: normal;
+    padding: 0 8px;
+}
+.in_for a,p a {
+    color: #9b745c;
+}
+.icon a {
+    display: inline-block;
+    width: 21px;
+    height: 16px;
+    margin: 18px 8px 0;
+    background: url(../image/icon.png) no-repeat;
+    vertical-align: middle;
+}
+.icon .wxdl {
+    background-position: -42px 0;
+}
+.icon .wbdl {
+    background-position: -87px 0;
+}
+.icon .zfbdl{
+    background-position: -130px 0;
+}
+.icon .qqdl:hover{
+    background-position: 0 -27px;
+}
+.icon .wxdl:hover{
+    background-position: -42px -27px;
+}
+.icon .wbdl:hover{
+    background-position: -87px -27px;
+}
+.icon .zfbdl:hover{
+    background-position: -130px -27px;
+}

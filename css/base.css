@@ -1,0 +1,49 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 14px;
+    height: 3000px;
+}
+i {
+    font-style: normal;
+}
+input,
+button {
+    border: 1px solid #eee;
+    outline: none;
+}
+
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+ul li {
+    list-style: none;
+}
+
+.w {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+.red {
+    color: red !important;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: block;
+}

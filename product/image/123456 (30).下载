@@ -1,0 +1,101 @@
+//今日头条转化助手
+//作者：齐泽西
+//日期：2018-03-28
+
+//今日头条转化，代码引入
+window.other_tj_toudiao_cvt = false;
+(function(root) {
+	root._tt_config = true;
+	var ta = document.createElement('script'); ta.type = 'text/javascript'; ta.async = true;
+	ta.src = document.location.protocol + '//' + 's3.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
+	window.addEventListener('load', function(){window.other_tj_toudiao_cvt = true;}, false);
+	setTimeout(function(){window.other_tj_toudiao_cvt = true;console.log('ok');}, 5000);
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
+})(window);
+
+var ToutiaoCvt = function() {
+	var maxt = 60000; // 最大等待时间60秒
+	var _this = this;
+	
+	//预约转化Key
+	this.yuyueCvtKey = 'douyintrackid';
+	//预约转化ID
+	this.yuyueCvtId = '1597967216926728';
+	//归属key
+	this.lockey = 'other_tj_cvt_loc';
+	//头条的归属值
+	this.locval = '(douyin|jinritoutiao)';
+	//广告key=》转化ID
+	this.keymap = {
+		'DouYin-sem-': '93074036280',
+		'DouYin-12xz-': '93073983472',
+		'JinRiTouTiao-12xz': '93432181534',
+		'JinRiTouTiao-sen': '93432181534'
+	};
+	
+	//落地页归属记录
+	this.setLoc = function() {
+		var url = location.href || document.URL;
+		var re = new RegExp('utm_source='+this.locval, 'ig');
+		
+		if (typeof(sessionStorage) == 'undefined') {
+			return;
+		}
+		if (url == '') {
+			return;
+		}
+		//是否头条的广告
+		if (!re.test(url)) {
+			return;
+		}
+		//针对落地页广告来获取转化ID
+		var trackid = this.yuyueCvtId;
+		for (var k in this.keymap) {
+			if (url.search(k) == -1) {
+				continue;
+			}
+			trackid = this.keymap[k];
+			break;
+		}
+		sessionStorage.setItem(this.yuyueCvtKey, trackid);
+		sessionStorage.setItem(this.lockey, this.locval);
+	}
+	
+	//预约转化
+	this.yuyue = function(timestamp) {
+		if (!_this.isLoaded() && (!timestamp || timestamp < maxt)) {
+			window.requestAnimationFrame(_this.yuyue);
+			return;
+		}
+		if (typeof(_taq) == 'undefined') {
+			return false;
+		}
+		if (typeof(sessionStorage) == 'undefined') {
+			return;
+		}
+		var loc = sessionStorage.getItem(_this.lockey);
+		var re = new RegExp(this.locval, 'ig');
+		if (!loc || !re.test(loc)) {
+			return;
+		}
+		var trackid = sessionStorage.getItem(_this.yuyueCvtKey);
+		if (trackid) {
+			_this.yuyueCvtId = trackid;
+		}
+		sessionStorage.setItem(_this.yuyueCvtKey, '');
+		sessionStorage.setItem(_this.lockey, '');
+		_taq.push({convert_id: _this.yuyueCvtId, event_type: "form"});
+	}
+	
+	//是否加载完成检查
+	this.isLoaded = function() {
+		//等待js,img等都加载完成，不然某些追加的事件会被覆盖掉
+		if (window.other_tj_toudiao_cvt && typeof(_taq) != 'undefined') {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+new ToutiaoCvt().setLoc();

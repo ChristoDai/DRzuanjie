@@ -1,0 +1,703 @@
+@keyframes mysnow{  
+    0%{  
+        bottom:100%;  
+        opacity:0;  
+    }  
+    50%{  
+        opacity:1;  
+        transform: rotate(1080deg);  
+    }  
+    100%{  
+        transform: rotate(0deg);  
+        opacity: 0;  
+        bottom:0;  
+    }  
+}  
+@-webkit-keyframes mysnow{  
+    0%{  
+        bottom:100%;  
+        opacity:0;  
+    }  
+    50%{  
+        opacity:1;  
+        -webkit-transform: rotate(1080deg);  
+    }  
+    100%{  
+        -webkit-transform: rotate(0deg);  
+        opacity: 0;  
+        bottom:0;  
+    }  
+}  
+@-moz-keyframes mysnow{  
+    0%{  
+        bottom:100%;  
+        opacity:0;  
+    }  
+    50%{  
+        opacity:1;  
+        -moz-transform: rotate(1080deg);  
+    }  
+    100%{  
+        -moz-transform: rotate(0deg);  
+        opacity: 0;  
+        bottom:0;  
+    }  
+}  
+@-ms-keyframes mysnow{  
+    0%{  
+        bottom:100%;  
+        opacity:0;  
+    }  
+    50%{  
+        opacity:1;  
+        -ms-transform: rotate(1080deg);  
+    }  
+    100%{  
+        -ms-transform: rotate(0deg);  
+        opacity: 0;  
+        bottom:0;  
+    }  
+}  
+@-o-keyframes mysnow{  
+    0%{  
+        bottom:100%;  
+        opacity:0;  
+    }  
+    50%{  
+        opacity:1;  
+        -o-transform: rotate(1080deg);  
+    }  
+    100%{  
+        -o-transform: rotate(0deg);  
+        opacity: 0;  
+        bottom:0;  
+    }  
+}  
+.roll{  
+    position:absolute;  
+    opacity:0;  
+    animation: mysnow 8s ;  
+    -webkit-animation: mysnow 5s ;  
+    -moz-animation: mysnow 5s ;  
+    -ms-animation: mysnow 5s ;  
+    -o-animation: mysnow 5s ;  
+    height:80px;  
+}  
+.div{  
+    position:fixed;  
+    z-index: 30;
+}  
+
+
+
+
+
+
+.only {
+    height: 620px;
+    background:url(../../img/p1.jpg);
+    margin-bottom: 10px;
+    position: relative;
+}
+.only .wei {
+    width: 280px; 
+    /* height: 200px;
+    background-color: pink; */
+    position: absolute;
+    right: 100px;
+    top:200px;
+    text-align: center;
+}
+.only .wei h1 {
+    font-weight: normal;
+    color: #6c5d59;
+    margin-bottom: 20px;
+}
+.only .wei P {
+    font-size: 16px;
+    color: #8b776c;
+    margin-bottom: 10px;
+}
+.only .wei span {
+    color: #8b776c;
+}
+/* 第一个大图结束 */
+
+.ring{
+    height: 620px;
+    background:url(../../img/p2.jpg);
+    position: relative;
+    margin-bottom: 10px;
+}
+.ring .smile {
+    width: 300px; 
+    position: absolute;
+    left: 100px;
+    top:150px;
+    text-align: center;
+}
+.ring .smile img{
+    margin-bottom: 18px;
+}
+.ring .smile p {
+    line-height: 1.8;
+    color: rgb(97, 91, 91);
+}
+.ring .smile span{
+    color: rgb(97, 91, 91);
+}
+/* 第二张大图结束 */
+.hand{
+    height: 620px;
+    background:url(../../img/p3.jpg);
+    position: relative;
+    margin-bottom: 10px;
+}
+.hand .so {
+    width: 300px; 
+    position: absolute;
+    right: 100px;
+    top:130px;
+    text-align: center;
+}
+.hand .so img{
+    margin-bottom: 30px;
+}
+.hand .so p {
+    line-height: 1.8;
+    color: #8b776c;
+}
+.hand .so span{
+    color: #8b776c; 
+}
+/* 第三张图结束 */
+.appoint {
+    height: 790px;
+    background-color: #f2f2f2;
+    line-height: 790px;
+  
+}
+.appoint img{
+    vertical-align: middle;
+    margin-left: 80px;
+    cursor: pointer;
+}
+.auto {
+    width: 450px;
+    height: 790px;
+    /* background-color: pink; */
+    margin-left: 170px;
+    margin-top: 34px;
+    line-height: 1.8;
+    text-align: center;
+}
+.zhen {
+    /* background-color: skyblue; */
+    margin-bottom:26px;
+}
+.zhen h1 {
+    font-size: 28px;
+    color: #666;
+    margin-bottom: 30px;
+    font-weight: normal;
+}
+.zhen a {
+    color: #c77f5c;
+    font-size: 19px;
+    border-bottom: 4px dotted #606060;
+    padding: 0 100px 15px;
+}
+.zhen p {
+    font-size: 15px;
+    color: #666;
+    line-height: 32px;
+    margin-top: 35px;
+}
+.inquire{
+    position: relative;
+}
+.inquire p{
+    line-height: 30px;
+    margin-bottom: 12px;
+    line-height: 30px;
+    font-size: 0;
+}
+.inquire .inq-l{
+    margin-bottom: 5px;
+} 
+
+ b{
+    width: 300px;
+    height: 80px;
+    border: 1px solid #999;
+    padding:5px 10px;
+    background-color: #fff;
+    display: none;
+    position: absolute;
+    right:-128px;
+    top:60px;
+    font-weight: normal;
+    color:#ccc;
+    box-sizing: border-box;
+    border-radius:0 20px 20px 20px;
+}
+.inquire i {
+    display: inline-block;
+    width: 84px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: normal;
+    color: #8b766c;
+    vertical-align: middle;
+}
+
+.inquire span{
+    font-size: 12px;
+    display: inline-block;
+    width: 70px;
+    height: 23px;
+    text-align: center;
+    line-height: 23px;
+    margin-right: 6px;
+    border: 1px solid #c2c2c2;
+    color: #c2c2c2;
+    cursor: pointer;
+    vertical-align: middle;
+}
+.inquire .hy{
+    border: 1px solid #8b766c;
+    background-color:#fff7f3;
+    color: #8b766c;
+}
+.inquire input {
+    padding: 7px 0 7px 4px;
+    vertical-align: middle;
+    width: 320px;
+    border: 1px solid #aeaeae;
+}
+
+.inquire .privacy {
+    color: #d5d5d5;
+    font-size: 12px;
+    margin-left: 340px;
+    line-height: 18px;
+}
+
+.inquire .verify{
+    font-size: 14px;
+    display: inline-block;
+    height: 32px;
+    line-height: 32px;
+    width: 198px;
+    border: 1px solid #8b766c;
+    color: #8b766c;
+    text-align: center;
+}
+/* 输入身份验证环节结束 */
+
+
+.gift{
+    height: 620px;
+    background:url(../../img/p4.jpg);
+    position: relative;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    
+}
+.gift .smile {
+    /* width: 320px;  */
+    position: absolute;
+    left:70px;
+    top:100px;
+    text-align: center;
+}
+.gift h2 {
+    font-size: 24px;
+    color: #fefaf9;
+    margin-top: 40px;
+}
+.gift .smile img{
+    margin-bottom: 12px;
+}
+.gift .smile p {
+    color: #bdbbba;
+    margin-top: 20px;
+    font-size: 14px;
+    line-height: 28px;
+    margin-bottom: 8px;
+}
+.gift .smile span{
+    color: #bdbbba;
+}
+
+.brandlb_more {
+    text-align: right;
+    height: 38px;
+    line-height: 38px;
+}
+/* 轮播图部分开始 */
+.box { 
+        height: 661px;
+        margin:0 auto;
+        position: relative;
+        overflow: hidden;
+}
+.box ul { 
+    height: 661px;
+    list-style: none;
+  }
+  .box ul li {
+    display: none;
+    position: absolute;
+    width: 100%;
+    cursor: pointer;
+  }
+  .box ul img{
+      width: 1360px;
+      height: 661px;
+      position: absolute;
+      left: 50%;
+      margin-left: -680px;
+  }
+  .box .cl_text {
+      position: absolute;
+      right:260px;
+      top:260px;
+      text-align: center;
+  }
+  .box .cl_text h1{
+      font-weight: normal;
+      color: #b49777;
+      margin-bottom: 16px;
+  }
+  .box .cl_text span {
+      line-height: 2;
+      display: inline-block;
+     
+  }
+  .box .cl_text .sa1{
+      margin-bottom: 10px;
+  }
+  .box .cl_text i{
+      color: #999;
+
+  }
+  .box ol {
+    list-style: none;
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .box ol li {
+    float: left;
+    width: 8px;
+    height: 8px;
+    background: #b3b2b2;
+    text-align: center;
+    line-height: 12px;
+    margin: 0 12px;
+    margin-top: 4px;
+    font-size: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+  }
+ .box .current {
+    background: #977359;
+  }
+
+/* 轮播图部分结束 */
+
+.end{
+    background: url(../../img/p6.jpg) no-repeat center top;
+    height: 700px;
+    margin-top: 10px;
+  }
+
+  .slide .slide1 {
+    width: 400px;
+    top: 20px;
+    left: 50px;
+    opacity: 0.2;
+    z-index: 2;
+  }
+  .slide .slide2 {
+    width: 600px;
+    top: 70px;
+    left: 0;
+    opacity: 0.8;
+    z-index: 3;
+  }
+  .slide .slide3 {
+    width: 800px;
+    top: 100px;
+    left: 200px;
+    opacity: 1;
+    z-index: 4;
+  }
+  .slide .slide4 {
+    width: 600px;
+    top: 70px;
+    left: 600px;
+    opacity: 0.8;
+    z-index: 3;
+  }
+  .slide .slide5 {
+    width: 400px;
+    top: 20px;
+    left: 750px;
+    opacity: .2;
+    z-index: 2;
+  }
+
+  
+  
+  
+  .slide {
+    height: 800px;
+    position: relative;
+    
+  }
+  
+  .slide li {
+    position: absolute;
+    left: 300px;
+    top: 0;
+    transition: all .5s;
+  }
+  
+  .slide li img {
+    width: 120%;
+  }
+  
+  .arrow {
+    opacity: 0;
+    position: relative;
+    z-index: 99;
+    top: 50%;
+  }
+  
+  .prev, .next {
+    width: 87px;
+    height: 78px;
+    position: absolute;
+    top: 50%;
+    margin-top: -56px;
+    background: url(../../img/love/left_02.png)  no-repeat;
+    background-size: 100% 100%;
+    z-index: 99;
+  }
+  
+  .next {
+    right: 0;
+    background-image: url(../../img/love/right_02.png);
+  }
+
+
+
+
+
+/* 手风琴部分 */
+
+  
+.wrapper{
+	
+	height: 800px;
+	background-color: rgb(221, 217, 217);
+	display: flex;
+	justify-content: center;
+    align-items: center;    /* opacity: 0.5; */
+    margin-top: 10px;
+}
+
+.wrapper .content{
+    display: flex;
+    width: 90%;
+    height: 90%;
+    align-items: center;
+    /* border: 1px solid orange; */
+    justify-content: space-between;
+}
+
+.wrapper .content .item{
+    position: relative;
+     width: 12%;
+     height: 100%;
+     color: #fff;
+     background-color: #333;
+     border-radius: 20px;
+     cursor: pointer;
+     overflow: hidden;
+     transition: height 0.5s ease-in 0.5s, width 0.5s ease-in;
+    
+     
+}
+
+.wrapper .content .item .inner{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+/*背景图片动画*/
+.wrapper .content .item:nth-of-type(1) .inner{
+    transition: transform 0.5s ease-in 0.1s;
+    
+}
+.wrapper .content .item:nth-of-type(2) .inner{
+    transition: transform 0.5s ease-in 0.2s;
+    
+}
+.wrapper .content .item:nth-of-type(3) .inner{
+    transition: transform 0.5s ease-in 0.3s;
+    
+}
+.wrapper .content .item:nth-of-type(4) .inner{
+    transition: transform 0.5s ease-in 0.4s;
+    
+}
+.wrapper .content .item:nth-of-type(5) .inner{
+    transition: transform 0.5s ease-in 0.5s;
+    
+}
+.wrapper .content .item:nth-of-type(6) .inner{
+    transition: transform 0.5s ease-in 0.6s;
+    
+}
+.wrapper .content .item:nth-of-type(7) .inner{
+    transition: transform 0.5s ease-in 0.7s;
+    
+}
+.wrapper .content .item:nth-of-type(8) .inner{
+    transition: transform 0.5s ease-in 0.8s;
+    
+}
+.wrapper .content .item .inner .bjPic{
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    opacity: 0.5;
+   
+}
+
+
+
+.wrapper .content .item:nth-of-type(1) .inner .bjPic{
+    background-image: url("../../img/婚纱照/img1.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(2) .inner .bjPic{
+   background-image: url("../../img/婚纱照/img2.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(3) .inner .bjPic{
+   background-image: url("../../img/婚纱照/img3.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(4) .inner .bjPic{
+   background-image: url("../../img/婚纱照/timg.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(5) .inner .bjPic{
+    background-image: url("../../img/婚纱照/p1.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(6) .inner .bjPic{
+    background-image: url("../../img/婚纱照/p2.png");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(7) .inner .bjPic{
+     background-image: url("../../img/婚纱照/p3.JPG");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item:nth-of-type(8) .inner .bjPic{
+    background-image: url("../../img/婚纱照/timg5.jpg");
+    background-size: cover;
+    background-position: center;
+}
+.wrapper .content .item .inner .dir{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s linear 0.3s;
+}
+
+.wrapper .content .item:hover .inner .bjPic{
+    opacity: 1;
+}
+.wrapper .content .item:hover .inner .dir{
+    font-size: 18px;
+    font-weight: bold;
+}
+.wrapper .content .item .showBox{
+    width: 100%;
+    height: 100%;
+    /* position: absolute; */
+    opacity: 0;
+}
+.wrapper .content .item .showBox .showBox-dir{
+    position: absolute;
+    left: 50px;
+    top: 50px;
+}
+.wrapper .content .item .showBox .close{
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 50px;
+    top: 50px;
+}
+.wrapper .content .item .showBox .close::before,
+.wrapper .content .item .showBox .close::after{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    content: "";
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: #fff;
+}
+.wrapper .content .item .showBox .close::before{
+    transform: rotateZ(45deg);
+}
+.wrapper .content .item .showBox .close::after{
+    transform: rotate(-45deg);
+}
+
+/*初始状态*/
+.init .content .item .inner{
+    transform: translateY(100%);
+}
+
+/*点击展示动画*/
+.startShowItem .content .item{
+    transition: width 0.5s ease-in 0.5s, height 0.5s ease-in;
+}
+.startShowItem .content .item.active{
+    width: 100%;
+}
+.startShowItem .content .item:not(.active){
+    height: 0%;
+    width: 0%;
+    /* transition: height 0.5s ease-in; */
+}
+.startShowItem .content .item .inner .dir{
+    opacity: 0;
+    transition: opacity 0.5s linear 0.2s;
+}
+.startShowItem .content .item .inner .showBox{
+    opacity: 1;
+    transition: opacity 0.5s linear 0.5s;
+}
+
